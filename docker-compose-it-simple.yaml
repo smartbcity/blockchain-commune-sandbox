@@ -4,16 +4,12 @@ services:
   ca.bc-coop.bclan:
     container_name: ca-bclan-network-it
     image: civisblockchain/bclan-ca:latest
-    ports:
-      - 7054:7054
     networks:
       - bclannet-it
 
   orderer.bclan:
     container_name: orderer-network-it
     image: civisblockchain/bclan-orderer:latest
-    ports:
-      - 7050:7050
     networks:
       - bclannet-it
 
@@ -23,9 +19,6 @@ services:
     environment:
       - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
       - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=bclannet-it
-    ports:
-      - 7051:7051
-      - 7053:7053
     volumes:
       - /var/run/:/host/var/run/
     networks:
@@ -34,26 +27,13 @@ services:
   cli-init.bc-coop.bclan:
     container_name: cli-init-bclan-network-it
     image: civisblockchain/bclan-cli:latest
-    environment:
-      - GOPATH=/opt/gopath
     command: /opt/blockchain-coop/util/init.sh
-    networks:
-      - bclannet-it
-
-  cli.bc-coop.bclan:
-    container_name: cli-bclan-network-it
-    image: civisblockchain/bclan-cli:latest
-    tty: true
-    working_dir: /opt/gopath/src/github.com/hyperledger/fabric/peer
-    command: /bin/bash
     networks:
       - bclannet-it
 
   coop-rest-java:
     container_name: coop-rest-bclan-network-it
     image: civisblockchain/bclan-coop-rest:latest
-    environment:
-      - coop_ccid=ssm
     ports:
       - 9090:9090
     networks:

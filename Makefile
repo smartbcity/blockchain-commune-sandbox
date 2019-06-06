@@ -21,13 +21,15 @@ FABRIC_COOP_REST_NAME	:= civisblockchain/bclan-coop-rest
 FABRIC_COOP_REST_IMG	:= ${FABRIC_COOP_REST_NAME}:${VERSION}
 FABRIC_COOP_REST_LATEST := ${FABRIC_COOP_REST_NAME}:latest
 
-build: build-ca build-peer build-orderer build-cli build-coop-rest
+clean: clean-coop-rest
 
-tag-latest: tag-latest-ca tag-latest-peer tag-latest-orderer tag-latest-cli tag-latest-coop-rest
+package: package-ca package-peer package-orderer package-cli package-coop-rest
 
 push: push-ca push-peer push-orderer push-cli push-coop-rest
 
-build-ca:
+push-latest: push-latest-ca push-latest-peer push-latest-orderer push-latest-cli push-latest-coop-rest
+
+package-ca:
 	@docker build \
          --build-arg COOP_CA_HOSTNAME=$$CA_HOSTNAME \
          --build-arg COOP_PEER_DOMAIN=$$cli_ORGA \
@@ -38,13 +40,14 @@ build-ca:
          -f docker/Ca_Dockerfile \
          -t ${FABRIC_CA_IMG} .
 
-tag-latest-ca:
-	@docker tag ${FABRIC_CA_IMG} ${FABRIC_CA_LATEST}
-
 push-ca:
 	@docker push ${FABRIC_CA_IMG}
 
-build-peer:
+push-latest-ca:
+	@docker tag ${FABRIC_CA_IMG} ${FABRIC_CA_LATEST}
+	@docker push ${FABRIC_CA_LATEST}
+
+package-peer:
 	@docker build \
 		--build-arg COOP_PEER=peer0 \
     	--build-arg COOP_PEER_MSP=$$peer_msp \
@@ -52,26 +55,28 @@ build-peer:
     	-f docker/Peer_Dockerfile \
     	-t ${FABRIC_PEER_IMG} .
 
-tag-latest-peer:
-	@docker tag ${FABRIC_PEER_IMG} ${FABRIC_PEER_LATEST}
-
 push-peer:
 	@docker push ${FABRIC_PEER_IMG}
 
-build-orderer:
+push-latest-peer:
+	@docker tag ${FABRIC_PEER_IMG} ${FABRIC_PEER_LATEST}
+	@docker push ${FABRIC_PEER_LATEST}
+
+package-orderer:
 	docker build \
     	--build-arg COOP_CA_DOMAIN=$$orderer_org \
     	--build-arg COOP_ORDERER_HOSTNAME=$$orderer_hostname \
     	-f docker/Orderer_Dockerfile \
     	-t ${FABRIC_ORDERER_IMG} .
 
-tag-latest-orderer:
-	@docker tag ${FABRIC_ORDERER_IMG} ${FABRIC_ORDERER_LATEST}
-
 push-orderer:
 	@docker push ${FABRIC_ORDERER_IMG}
 
-build-cli:
+push-latest-orderer:
+	@docker tag ${FABRIC_ORDERER_IMG} ${FABRIC_ORDERER_LATEST}
+	@docker push ${FABRIC_ORDERER_LATEST}
+
+package-cli:
 	docker build \
     	--build-arg COOP_CA_DOMAIN=$$orderer_org \
     	--build-arg COOP_PEER=peer0 \
@@ -81,19 +86,20 @@ build-cli:
     	-f docker/Cli_Dockerfile \
     	-t ${FABRIC_CLI_IMG} .
 
-tag-latest-cli:
-	@docker tag ${FABRIC_CLI_IMG} ${FABRIC_CLI_LATEST}
-
 push-cli:
 	@docker push ${FABRIC_CLI_IMG}
 
-build-coop-rest:
-	@echo $$coop_channel
-	@echo $$coop_ccid
-	@echo $$coop_user_org
-	@echo $$coop_endorsers
-	@echo $$ca__ADMIN
-	@echo $$ca__PASSWD
+
+push-latest-cli:
+	@docker tag ${FABRIC_CLI_IMG} ${FABRIC_CLI_LATEST}
+	@docker push ${FABRIC_CLI_LATEST}
+
+clean-coop-rest:
+	@rm -fr build
+
+package-coop-rest: clean-coop-rest
+	@mkdir build
+	@sed s/__VERSION__/${VERSION}/ docker/CoopRest_Dockerfile > build/CoopRest_Dockerfile
 	@docker build \
     	--build-arg coop_channel=$$coop_channel \
     	--build-arg coop_ccid=$$coop_ccid \
@@ -101,11 +107,12 @@ build-coop-rest:
 		--build-arg coop_endorsers=$$coop_endorsers \
     	--build-arg ca__ADMIN=$$ca__ADMIN \
     	--build-arg ca__PASSWD=$$ca__PASSWD \
-    	-f docker/CoopRest_Dockerfile \
+    	-f build/CoopRest_Dockerfile \
     	-t ${FABRIC_COOP_REST_IMG} .
-
-tag-latest-coop-rest:
-	@docker tag ${FABRIC_COOP_REST_IMG} ${FABRIC_COOP_REST_LATEST}
 
 push-coop-rest:
 	@docker push ${FABRIC_COOP_REST_IMG}
+
+push-latest-coop-rest:
+	@docker tag ${FABRIC_COOP_REST_IMG} ${FABRIC_COOP_REST_LATEST}
+	@docker push ${FABRIC_COOP_REST_LATEST}

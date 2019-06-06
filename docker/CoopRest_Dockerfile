@@ -1,4 +1,4 @@
-FROM civisblockchain/coop-rest-java
+FROM civisblockchain/coop-rest-java:__VERSION__
 
 ARG coop_channel
 ARG coop_ccid
