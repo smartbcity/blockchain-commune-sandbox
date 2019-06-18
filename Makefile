@@ -89,7 +89,6 @@ package-cli:
 push-cli:
 	@docker push ${FABRIC_CLI_IMG}
 
-
 push-latest-cli:
 	@docker tag ${FABRIC_CLI_IMG} ${FABRIC_CLI_LATEST}
 	@docker push ${FABRIC_CLI_LATEST}
