@@ -21,6 +21,13 @@ FABRIC_COOP_REST_NAME	:= civisblockchain/bclan-coop-rest
 FABRIC_COOP_REST_IMG	:= ${FABRIC_COOP_REST_NAME}:${VERSION}
 FABRIC_COOP_REST_LATEST := ${FABRIC_COOP_REST_NAME}:latest
 
+HERACLES_VERSION ?=
+
+ifndef CURRENT_VERSION
+	HERACLES_VERSION := latest
+endif
+
+
 clean: clean-coop-rest
 
 package: package-ca package-peer package-orderer package-cli package-coop-rest
@@ -98,7 +105,7 @@ clean-coop-rest:
 
 package-coop-rest: clean-coop-rest
 	@mkdir build
-	@sed s/__VERSION__/${VERSION}/ docker/CoopRest_Dockerfile > build/CoopRest_Dockerfile
+	@sed s/__VERSION__/${HERACLES_VERSION}/ docker/CoopRest_Dockerfile > build/CoopRest_Dockerfile
 	@docker build \
     	--build-arg coop_channel=$$coop_channel \
     	--build-arg coop_ccid=$$coop_ccid \
