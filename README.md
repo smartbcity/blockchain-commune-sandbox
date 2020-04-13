@@ -16,4 +16,10 @@ docker cp  cli-bclan-network-it:/opt/commune-sandbox/ ./infra/dev
 
 
 ## Release
-make build tag-latest -e VERSION=0.3.1
+ * Update ssm_version in .env
+ 
+ * Tag branch
+ ```
+git tag -a v0.1.0 -m 'version 0.1.0'
+git push origin 0.1.0
+```

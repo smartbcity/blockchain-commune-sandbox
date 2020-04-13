@@ -57,7 +57,7 @@ push-master:
   when: manual
 
 version-tags:
-  extends: .package
+  extends: .version
   only:
     - tags
 
