@@ -1,32 +1,31 @@
 include .env
 export
 
-FABRIC_CA_NAME	:= civisblockchain/bclan-ca
+FABRIC_CA_NAME	:= smartbcity/commune-sandbox-ca
 FABRIC_CA_IMG	:= ${FABRIC_CA_NAME}:${VERSION}
 FABRIC_CA_LATEST := ${FABRIC_CA_NAME}:latest
 
-FABRIC_PEER_NAME	:= civisblockchain/bclan-peer
+FABRIC_PEER_NAME	:= smartbcity/commune-sandbox-peer
 FABRIC_PEER_IMG	:= ${FABRIC_PEER_NAME}:${VERSION}
 FABRIC_PEER_LATEST := ${FABRIC_PEER_NAME}:latest
 
-FABRIC_ORDERER_NAME	:= civisblockchain/bclan-orderer
+FABRIC_ORDERER_NAME	:= smartbcity/commune-sandbox-orderer
 FABRIC_ORDERER_IMG	:= ${FABRIC_ORDERER_NAME}:${VERSION}
 FABRIC_ORDERER_LATEST := ${FABRIC_ORDERER_NAME}:latest
 
-FABRIC_CLI_NAME	:= civisblockchain/bclan-cli
+FABRIC_CLI_NAME	:= smartbcity/commune-sandbox-cli
 FABRIC_CLI_IMG	:= ${FABRIC_CLI_NAME}:${VERSION}
 FABRIC_CLI_LATEST := ${FABRIC_CLI_NAME}:latest
 
-FABRIC_COOP_REST_NAME	:= civisblockchain/bclan-coop-rest
+FABRIC_COOP_REST_NAME	:= smartbcity/commune-sandbox-ssm-rest
 FABRIC_COOP_REST_IMG	:= ${FABRIC_COOP_REST_NAME}:${VERSION}
 FABRIC_COOP_REST_LATEST := ${FABRIC_COOP_REST_NAME}:latest
 
-HERACLES_VERSION ?=
+SSM_REST_VERSION ?=
 
 ifndef CURRENT_VERSION
-	HERACLES_VERSION := latest
+	SSM_REST_VERSION := latest
 endif
-
 
 clean: clean-coop-rest
 
@@ -105,7 +104,7 @@ clean-coop-rest:
 
 package-coop-rest: clean-coop-rest
 	@mkdir build
-	@sed s/__VERSION__/${HERACLES_VERSION}/ docker/CoopRest_Dockerfile > build/CoopRest_Dockerfile
+	@sed s/__VERSION__/${SSM_REST_VERSION}/ docker/CoopRest_Dockerfile > build/CoopRest_Dockerfile
 	@docker build \
     	--build-arg coop_channel=$$coop_channel \
     	--build-arg coop_ccid=$$coop_ccid \

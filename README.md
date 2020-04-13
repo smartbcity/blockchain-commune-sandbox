@@ -1,6 +1,6 @@
 # Network configuration: bclan-it
 
-Network with a generated crypto to reproduce test environment
+Hyperledger Fabric Network with a generated crypto and ssm chaincode installed
 
 ## Use
  * Copy [docker-coompose-it.yaml](docker-coompose-it.yaml) in your project
