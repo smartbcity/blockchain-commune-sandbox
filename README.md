@@ -11,7 +11,7 @@ docker-compose -f docker-compose-it.yaml up -d
  * Copy configuration
 ```
 mkdir -p infra
-docker cp  cli-bclan-network-it:/opt/blockchain-coop-dev/ ./infra/dev
+docker cp  cli-bclan-network-it:/opt/commune-sandbox/ ./infra/dev
 ```
 
 

@@ -22,9 +22,14 @@ FABRIC_COOP_REST_IMG	:= ${FABRIC_COOP_REST_NAME}:${VERSION}
 FABRIC_COOP_REST_LATEST := ${FABRIC_COOP_REST_NAME}:latest
 
 SSM_REST_VERSION ?=
+SSM_VERSION ?=
 
 ifndef CURRENT_VERSION
 	SSM_REST_VERSION := latest
+endif
+
+ifndef SSM_VERSION
+	SSM_VERSION := latest
 endif
 
 clean: clean-coop-rest
@@ -83,13 +88,16 @@ push-latest-orderer:
 	@docker push ${FABRIC_ORDERER_LATEST}
 
 package-cli:
-	docker build \
+	@mkdir build -p
+	@sed s/__SSM_VERSION__/${SSM_VERSION}/ docker/Cli_Dockerfile > build/Cli_Dockerfile
+	@docker build \
     	--build-arg COOP_CA_DOMAIN=$$orderer_org \
     	--build-arg COOP_PEER=peer0 \
     	--build-arg COOP_PEER_DOMAIN=$$cli_ORGA \
     	--build-arg COOP_PEER_MSP=$$peer_msp \
     	--build-arg CLI_USER=$$cli_user \
-    	-f docker/Cli_Dockerfile \
+    	--build-arg SSM_VERSION=$$SSM_VERSION \
+    	-f build/Cli_Dockerfile \
     	-t ${FABRIC_CLI_IMG} .
 
 push-cli:
@@ -103,7 +111,7 @@ clean-coop-rest:
 	@rm -fr build
 
 package-coop-rest: clean-coop-rest
-	@mkdir build
+	@mkdir build -p
 	@sed s/__VERSION__/${SSM_REST_VERSION}/ docker/CoopRest_Dockerfile > build/CoopRest_Dockerfile
 	@docker build \
     	--build-arg coop_channel=$$coop_channel \

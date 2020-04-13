@@ -1,4 +1,4 @@
-FROM civisblockchain/fabric-cli-chaincode
+FROM hyperledger/fabric-tools:1.4.0
 
 ARG COOP_PEER
 ARG COOP_PEER_DOMAIN
@@ -6,6 +6,8 @@ ARG COOP_PEER_MSP
 ARG CLI_USER
 ARG COOP_CA_DOMAIN
 
+ENV PATH="${SSM_PATH}/util:${PATH}"
+ENV SSM_PATH=/opt/smartbcity/ssm
 ENV FABRIC_LOGGING_SPEC info
 ENV CORE_CHAINCODE_LOGGING_LEVEL info
 ENV CORE_PEER_ID cli.${COOP_PEER_DOMAIN}
@@ -19,11 +21,16 @@ ENV CORE_PEER_TLS_CERT_FILE /etc/hyperledger/user/tls/client.crt
 ENV CORE_PEER_TLS_ROOTCERT_FILE /etc/hyperledger/user/tls/ca.crt
 ENV GOPATH /opt/gopath
 
-COPY ./fabric/util /opt/blockchain-coop/util
 COPY ./fabric/crypto-config/peerOrganizations/${COOP_PEER_DOMAIN}/users/${CLI_USER}@${COOP_PEER_DOMAIN}/ /etc/hyperledger/user
 COPY ./fabric/crypto-config/ordererOrganizations/${COOP_CA_DOMAIN}/tlsca/ /etc/hyperledger/orderer/
 COPY ./fabric/config /etc/hyperledger/config
 
-COPY ./fabric /opt/blockchain-coop-dev/fabric
-COPY ./user /opt/blockchain-coop-dev/user
-COPY ./.env /opt/blockchain-coop-dev
+COPY ./fabric/util /opt/commune-sandbox/util
+COPY ./fabric /opt/commune-sandbox/fabric
+RUN ls -al /opt/commune-sandbox/fabric
+COPY ./user /opt/commune-sandbox/user
+COPY ./.env /opt/commune-sandbox
+
+COPY --from=smartbcity/ssm:__SSM_VERSION__ ${SSM_PATH}/ssm-*.pak ${SSM_PATH}/ssm.pak
+COPY --from=smartbcity/ssm:__SSM_VERSION__ ${SSM_PATH}/util ${SSM_PATH}/util
+COPY --from=smartbcity/ssm:__SSM_VERSION__ ${SSM_PATH}/env ${SSM_PATH}/env
