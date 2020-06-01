@@ -11,9 +11,27 @@ docker-compose -f docker-compose-it.yaml up -d
  * Copy configuration
 ```
 mkdir -p infra
-docker cp  cli-bclan-network-it:/opt/commune-sandbox/ ./infra/dev
+docker cp  cli-init-bclan-network-it:/opt/commune-sandbox/ ./infra/dev
 ```
 
+
+## Configuration
+
+docker run -it smartbcity/commune-sandbox-cli:latest /bin/bash
+find /opt/commune-sandbox/
+```
+├── fabric                -> fabric configuration
+├── user                  -> SSM User crypto
+│   ├── bob
+│   ├── bob.pub
+│   ├── sam
+│   ├── sam.pub
+│   ├── ssm-admin
+│   ├── ssm-admin.pub
+├── util                  -> Start mobilite.eco api    
+```
+
+docker run -d  my_image service nginx start
 
 ## Release
  * Update ssm_version in .env

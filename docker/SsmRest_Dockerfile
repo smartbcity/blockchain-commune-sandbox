@@ -1,4 +1,4 @@
-FROM civisblockchain/coop-rest-java:__VERSION__
+FROM smartbcity/heracles-api-rest:__SSM_HERACLES_API_REST_VERSION__
 
 ARG coop_channel
 ARG coop_ccid

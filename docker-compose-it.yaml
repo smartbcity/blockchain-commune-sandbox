@@ -49,8 +49,8 @@ services:
     networks:
       - commune-net
 
-  coop-rest-java:
-    container_name: coop-rest-bclan-network-it
+  ssm-rest-java:
+    container_name: ssm-rest-bclan-network-it
     image: smartbcity/commune-sandbox-ssm-rest:latest
     environment:
       - coop_ccid=ssm

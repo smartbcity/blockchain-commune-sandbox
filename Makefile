@@ -17,28 +17,28 @@ FABRIC_CLI_NAME	:= smartbcity/commune-sandbox-cli
 FABRIC_CLI_IMG	:= ${FABRIC_CLI_NAME}:${VERSION}
 FABRIC_CLI_LATEST := ${FABRIC_CLI_NAME}:latest
 
-FABRIC_COOP_REST_NAME	:= smartbcity/commune-sandbox-ssm-rest
-FABRIC_COOP_REST_IMG	:= ${FABRIC_COOP_REST_NAME}:${VERSION}
-FABRIC_COOP_REST_LATEST := ${FABRIC_COOP_REST_NAME}:latest
+FABRIC_SSM_REST_NAME	:= smartbcity/commune-sandbox-ssm-rest
+FABRIC_SSM_REST_IMG	:= ${FABRIC_SSM_REST_NAME}:${VERSION}
+FABRIC_SSM_REST_LATEST := ${FABRIC_SSM_REST_NAME}:latest
 
-SSM_REST_VERSION ?=
+SSM_HERACLES_API_REST_VERSION ?=
 SSM_VERSION ?=
 
 ifndef CURRENT_VERSION
-	SSM_REST_VERSION := latest
+	SSM_HERACLES_API_REST_VERSION := latest
 endif
 
 ifndef SSM_VERSION
 	SSM_VERSION := latest
 endif
 
-clean: clean-coop-rest
+clean: clean-ssm-rest
 
-package: package-ca package-peer package-orderer package-cli package-coop-rest
+package: package-ca package-peer package-orderer package-cli package-ssm-rest
 
-push: push-ca push-peer push-orderer push-cli push-coop-rest
+push: push-ca push-peer push-orderer push-cli push-ssm-rest
 
-push-latest: push-latest-ca push-latest-peer push-latest-orderer push-latest-cli push-latest-coop-rest
+push-latest: push-latest-ca push-latest-peer push-latest-orderer push-latest-cli push-latest-ssm-rest
 
 package-ca:
 	@docker build \
@@ -107,12 +107,12 @@ push-latest-cli:
 	@docker tag ${FABRIC_CLI_IMG} ${FABRIC_CLI_LATEST}
 	@docker push ${FABRIC_CLI_LATEST}
 
-clean-coop-rest:
+clean-ssm-rest:
 	@rm -fr build
 
-package-coop-rest: clean-coop-rest
+package-ssm-rest: clean-ssm-rest
 	@mkdir build -p
-	@sed s/__VERSION__/${SSM_REST_VERSION}/ docker/CoopRest_Dockerfile > build/CoopRest_Dockerfile
+	@sed s/__SSM_HERACLES_API_REST_VERSION__/${SSM_HERACLES_API_REST_VERSION}/ docker/SsmRest_Dockerfile > build/SsmRest_Dockerfile
 	@docker build \
     	--build-arg coop_channel=$$coop_channel \
     	--build-arg coop_ccid=$$coop_ccid \
@@ -120,12 +120,12 @@ package-coop-rest: clean-coop-rest
 		--build-arg coop_endorsers=$$coop_endorsers \
     	--build-arg ca__ADMIN=$$ca__ADMIN \
     	--build-arg ca__PASSWD=$$ca__PASSWD \
-    	-f build/CoopRest_Dockerfile \
-    	-t ${FABRIC_COOP_REST_IMG} .
+    	-f build/SsmRest_Dockerfile \
+    	-t ${FABRIC_SSM_REST_IMG} .
 
-push-coop-rest:
-	@docker push ${FABRIC_COOP_REST_IMG}
+push-ssm-rest:
+	@docker push ${FABRIC_SSM_REST_IMG}
 
-push-latest-coop-rest:
-	@docker tag ${FABRIC_COOP_REST_IMG} ${FABRIC_COOP_REST_LATEST}
-	@docker push ${FABRIC_COOP_REST_LATEST}
+push-latest-ssm-rest:
+	@docker tag ${FABRIC_SSM_REST_IMG} ${FABRIC_SSM_REST_LATEST}
+	@docker push ${FABRIC_SSM_REST_LATEST}
