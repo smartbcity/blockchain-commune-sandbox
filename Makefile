@@ -34,6 +34,9 @@ endif
 
 clean: clean-ssm-rest
 
+test:
+	@echo No test to run
+
 package: package-ca package-peer package-orderer package-cli package-ssm-rest
 
 push: push-ca push-peer push-orderer push-cli push-ssm-rest

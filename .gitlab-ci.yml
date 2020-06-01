@@ -1,19 +1,42 @@
-image: smartbcity/gitlab-ci-jdk8:1.0.0
+image: smartbcity/gitlab-ci-jdk8:1.2.0
 
 stages:
+  - build
+  - verify
   - version
   - package
   - push
 
+variables:
+  BRANCH_VERSION: "experimental"
+  MASTER_VERSION: "next"
+  PROFILES_ACTIVE: "gitlab"
 
-.version:
+.version-tag:
   stage: version
-  image: smartbcity/gitlab-ci-semantic-versioning:1.0.0
+  image: smartbcity/gitlab-ci-semantic-versioning:1.2.0
   script:
-    - make -f /opt/io.smart-b/semantic-versioning/Makefile next_version >> version.build
+    - make -f /opt/city.smartb/semantic-versioning/Makefile -e BRANCH_NAME=$CI_COMMIT_REF_NAME next_version >> version.build
   artifacts:
     paths:
       - version*
+
+.version-next-tag:
+  stage: version
+  image: smartbcity/gitlab-ci-semantic-versioning:1.2.0
+  script:
+    - make -f /opt/city.smartb/semantic-versioning/Makefile next_version >> version.build
+  artifacts:
+    paths:
+      - version*
+
+.verify:
+  stage: verify
+  before_script:
+    - CONTAINER_NAME=$(docker ps --format '{{.Names}}' --filter name=$HOSTNAME*)
+    - docker network connect bclannet-it $CONTAINER_NAME
+  script:
+    - make test
 
 .package:
   stage: package
@@ -29,35 +52,73 @@ stages:
     - export VERSION_BUILD=$(cat version.build)
     - make push -e VERSION=${VERSION_BUILD}
 
-.push-latest:
-  stage: push
-  before_script:
-    - echo "$CI_REGISTRY_PASSWORD" | docker login -u "$CI_REGISTRY_USER" --password-stdin
-  script:
-    - export VERSION_BUILD=$(cat version.build)
-    - make push-latest -e VERSION=${VERSION_BUILD}
+.onlyBranch: &onlyBranch
+  only:
+    refs:
+      - branches
+  except:
+    refs:
+      - master
 
-package-master:
-  extends: .package
-  before_script:
-    - echo master > version.build
+.onlyMaster: &onlyMaster
   only:
     refs:
       - master
-  when: manual
+
+version-branch:
+  <<: *onlyBranch
+  extends: .version-next-tag
+  after_script:
+    - echo $BRANCH_VERSION > version.build
+    - echo "//////////////////////////////"
+    - echo "Version is "+ $(cat version.build)
+    - echo "//////////////////////////////"
+
+verify-branch:
+  <<: *onlyBranch
+  extends: .verify
+
+package-branch:
+  <<: *onlyBranch
+  extends: .package
   artifacts:
     paths:
       - version*
 
-push-master:
+push-branch:
+  <<: *onlyBranch
   extends: .push
-  only:
-    refs:
-      - master
+  when: manual
+
+version-master:
+  <<: *onlyMaster
+  extends: .version-next-tag
+  after_script:
+    - echo $MASTER_VERSION > version.build
+    - echo "//////////////////////////////"
+    - echo "Version is "+ $(cat version.build)
+    - echo "//////////////////////////////"
+
+verify-master:
+  <<: *onlyMaster
+  extends: .verify
+
+package-master:
+  <<: *onlyMaster
+  extends: .package
+
+push-master:
+  <<: *onlyMaster
+  extends: .push
   when: manual
 
 version-tags:
-  extends: .version
+  extends: .version-tag
+  only:
+    - tags
+
+verify-tags:
+  extends: .verify
   only:
     - tags
 
@@ -68,10 +129,5 @@ package-tags:
 
 push-tags:
   extends: .push
-  only:
-    - tags
-
-push-latest-tags:
-  extends: .push-latest
   only:
     - tags
