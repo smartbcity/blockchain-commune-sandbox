@@ -23,6 +23,8 @@ services:
       - /var/run/:/host/var/run/
     networks:
       - bclannet-it
+    depends_on:
+      - orderer.bclan
 
   cli-init.bc-coop.bclan:
     container_name: cli-init-bclan-network-it
@@ -30,6 +32,8 @@ services:
     command: /opt/commune-sandbox/util/init.sh
     networks:
       - bclannet-it
+    depends_on:
+      - peer0.bc-coop.bclan
 
   coop-rest-java:
     container_name: coop-rest-bclan-network-it
