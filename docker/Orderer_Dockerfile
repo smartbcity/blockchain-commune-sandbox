@@ -1,4 +1,4 @@
-FROM hyperledger/fabric-orderer:1.4
+FROM hyperledger/fabric-orderer:2.1.1
 
 ARG COOP_CA_DOMAIN
 ARG COOP_ORDERER_HOSTNAME
