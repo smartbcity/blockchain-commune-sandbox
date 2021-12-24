@@ -21,16 +21,22 @@ ENV CORE_PEER_TLS_CERT_FILE /etc/hyperledger/user/tls/client.crt
 ENV CORE_PEER_TLS_ROOTCERT_FILE /etc/hyperledger/user/tls/ca.crt
 ENV GOPATH /opt/gopath
 
+
+RUN apk add --update openssl && \
+    rm -rf /var/cache/apk/
+
 COPY ./fabric/crypto-config/peerOrganizations/${COOP_PEER_DOMAIN}/users/${CLI_USER}@${COOP_PEER_DOMAIN}/ /etc/hyperledger/user
 COPY ./fabric/crypto-config/ordererOrganizations/${COOP_CA_DOMAIN}/tlsca/ /etc/hyperledger/orderer/
 COPY ./fabric/config /etc/hyperledger/config
 
 COPY ./fabric/util /opt/commune-sandbox/util
+COPY ./fabric/cli /opt/commune-sandbox/cli
 COPY ./fabric /opt/commune-sandbox/fabric
-RUN ls -al /opt/commune-sandbox/fabric
 COPY ./user /opt/commune-sandbox/user
 COPY ./.env /opt/commune-sandbox
 
 COPY --from=smartbcity/ssm:__SSM_VERSION__ ${SSM_PATH}/ssm-*.pak ${SSM_PATH}/ssm.pak
 COPY --from=smartbcity/ssm:__SSM_VERSION__ ${SSM_PATH}/util ${SSM_PATH}/util
 COPY --from=smartbcity/ssm:__SSM_VERSION__ ${SSM_PATH}/env ${SSM_PATH}/env
+
+ENV PATH=$PATH:/opt/commune-sandbox/cli
