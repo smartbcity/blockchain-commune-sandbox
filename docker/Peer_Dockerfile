@@ -1,4 +1,4 @@
-FROM hyperledger/fabric-peer:2.3.0
+FROM hyperledger/fabric-peer:2.3.3
 
 ARG COOP_PEER
 ARG COOP_PEER_DOMAIN
