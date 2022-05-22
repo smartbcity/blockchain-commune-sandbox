@@ -38,6 +38,8 @@ services:
   coop-rest-java:
     container_name: coop-rest-bclan-network-it
     image: smartbcity/commune-sandbox-ssm-rest:experimental
+    environment:
+      - i2_jwt-issuer-uri=
     ports:
       - 9090:9090
     networks:

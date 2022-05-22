@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 source /opt/commune-sandbox/util/env
-
+sleep 5
 #Join network
 echo 'Join channel ${CHANNEL}'
 peer channel create -o ${ORDERER_ADDR} -c ${CHANNEL} -f /etc/hyperledger/config/${CHANNEL}.tx --tls --cafile ${ORDERER_CERT}
